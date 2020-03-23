@@ -97,16 +97,15 @@ public class Login extends Frame implements WindowListener, ActionListener
 
 		else if(evento.getSource().equals(btnAceptar)) 
 		{
-			// Tareas del botón Aceptar
-			String Administrador="Administrador";
-			
+			// Tareas del botón Aceptar					
 			String cadenaEncriptada = getSHA256(txtClave.getText());
 			String usuarioPermiso = txtUsuario.getText();
-			
+			String tipoUsuario = tipoUsuario();
 			
 			String sentencia = "SELECT * FROM usuarios WHERE ";
 			sentencia += "nombreUsuario = '"+usuarioPermiso+"'";
 			sentencia += " AND claveUsuario = '"+cadenaEncriptada+"'";
+			
 
 			System.out.println(sentencia);
 			
@@ -125,7 +124,8 @@ public class Login extends Frame implements WindowListener, ActionListener
 					
 					if(rs.next())
 					{
-						if(usuarioPermiso.equals(Administrador)) 
+												
+						if(tipoUsuario.equals("0")) 
 						{
 							new menuPrincipal();
 							
@@ -233,5 +233,28 @@ public class Login extends Frame implements WindowListener, ActionListener
 			dialogoError("ERROR: Conexión Base Datos","Drive no cargado");
 		}
 		return con;
+	}
+	public String tipoUsuario() 
+	{
+		String tipo = null;
+		String sql = "SELECT * FROM usuarios WHERE nombreUsuario = " +"'"+txtUsuario.getText()+"'";
+		// Conectar a la base de datos
+		Connection con = conectar("imprentaP","root","Studium2019;");
+		try 
+		{			
+			// Creamos un STATEMENT para una consulta SQL INSERT.
+			Statement sta = con.createStatement();
+			ResultSet rs = sta.executeQuery(sql);
+			while(rs.next()) 
+			{
+				tipo = rs.getString("tipoUsuario");
+			}			
+		}
+		catch (SQLException ex) 
+		{
+			System.out.println("ERROR:al hacer el SELECT");
+			ex.printStackTrace();
+		}
+		return tipo;
 	}
 }
